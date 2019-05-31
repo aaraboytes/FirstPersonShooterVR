@@ -80,7 +80,7 @@ public class ViveInputGun : MonoBehaviour
         joint.breakTorque = 20000;
         joint.connectedBody = weapon.GetComponent<Rigidbody>();
         //Make other rigidbody kinematic 
-        weapon.GetComponent<Rigidbody>().isKinematic = true;
+        weapon.transform.GetChild(0).GetComponent<Collider>().enabled = false;
         
     }
     void DropWeapon()
@@ -96,7 +96,7 @@ public class ViveInputGun : MonoBehaviour
             weapon.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
             weapon.GetComponent<Rigidbody>().isKinematic = false;
         }
-
+        weapon.transform.GetChild(0).GetComponent<Collider>().enabled = true;
         weapon = null;
     }
     #endregion
@@ -109,6 +109,7 @@ public class ViveInputGun : MonoBehaviour
         force = w.force;
         spawnPoint = w.spawnPoint;
         shotParticle = w.shotParticle;
+        collisionParticle = w.collisionParticle;
     }
     void Shot()
     {
@@ -119,9 +120,10 @@ public class ViveInputGun : MonoBehaviour
         Debug.DrawLine(spawnPoint.transform.position, spawnPoint.transform.position + spawnPoint.forward * 1, Color.red);
         if (Physics.Raycast(spawnPoint.position, dir, out hit))
         {
+            print("Collision with wall");
             GameObject hole = Pool.Instance.Recycle(bulletHole, Vector3.zero, Quaternion.identity);
             GameObject shotPart = Pool.Instance.Recycle(collisionParticle, Vector3.zero, Quaternion.identity);
-
+            
             Quaternion shotHoleRot = Quaternion.LookRotation(hit.normal);
             Vector3 shotHolePos = hit.point - dir * 0.01f;
 
