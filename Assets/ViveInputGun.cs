@@ -79,8 +79,8 @@ public class ViveInputGun : MonoBehaviour
         joint.breakForce = 20000;
         joint.breakTorque = 20000;
         joint.connectedBody = weapon.GetComponent<Rigidbody>();
-        //Make other rigidbody kinematic^vzzzz 
-        weapon.GetComponent
+        //Make other rigidbody kinematic 
+        weapon.GetComponent<Rigidbody>().isKinematic = true;
         
     }
     void DropWeapon()
@@ -94,6 +94,7 @@ public class ViveInputGun : MonoBehaviour
             //Supposed to have pose.getvelocity() and pose.getangularvelocity()
             weapon.GetComponent<Rigidbody>().velocity = Vector3.zero;
             weapon.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            weapon.GetComponent<Rigidbody>().isKinematic = false;
         }
 
         weapon = null;
