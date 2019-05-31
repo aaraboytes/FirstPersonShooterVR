@@ -44,7 +44,6 @@ public class Pool : MonoBehaviour
             bucket.Enqueue(element);
             element.transform.position = position;
             element.transform.rotation = rotation;
-            element.transform.localScale = pooledObj.transform.localScale;
             if (element.GetComponent<Rigidbody>()) element.GetComponent<Rigidbody>().velocity = Vector3.zero;
             element.SetActive(true);
             return element;

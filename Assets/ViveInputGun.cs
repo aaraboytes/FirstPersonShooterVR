@@ -19,6 +19,7 @@ public class ViveInputGun : MonoBehaviour
     int maxBullets = 0;
     float cadence = 0;
     float force = 0;
+    AudioSource audio;
 
     private void Awake()
     {
@@ -110,6 +111,7 @@ public class ViveInputGun : MonoBehaviour
         spawnPoint = w.spawnPoint;
         shotParticle = w.shotParticle;
         collisionParticle = w.collisionParticle;
+        audio = weapon.GetComponent<AudioSource>();
     }
     void Shot()
     {
@@ -118,6 +120,7 @@ public class ViveInputGun : MonoBehaviour
         shotParticle.Play();
         LevelManager.Instance.IncreaseBulletsShooted();
         Debug.DrawLine(spawnPoint.transform.position, spawnPoint.transform.position + spawnPoint.forward * 1, Color.red);
+        audio.Play();
         if (Physics.Raycast(spawnPoint.position, dir, out hit))
         {
             print("Collision with wall");
