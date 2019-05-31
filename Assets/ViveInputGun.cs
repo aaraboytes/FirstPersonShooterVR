@@ -6,10 +6,10 @@ public class ViveInputGun : MonoBehaviour
 {
     public SteamVR_TrackedObject mTrackedObject = null;
     public SteamVR_Controller.Device mDevice;
-
+    [SerializeField]
     GameObject weapon = null;
     bool grabbing = false;
-
+   
     //weapon
     Transform spawnPoint;
     AmmoType type;
@@ -45,9 +45,9 @@ public class ViveInputGun : MonoBehaviour
         //Down
         if (mDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
         {
-            if (!grabbing && weapon == null)
+            if (!grabbing && weapon !=null)
                 GrabWeapon();
-            else if (grabbing && weapon != null)
+            else if (grabbing)
                 DropWeapon();
         }
         //Up
@@ -79,6 +79,8 @@ public class ViveInputGun : MonoBehaviour
         joint.breakForce = 20000;
         joint.breakTorque = 20000;
         joint.connectedBody = weapon.GetComponent<Rigidbody>();
+        //Make other rigidbody kinematic^vzzzz 
+        weapon.GetComponent
         
     }
     void DropWeapon()
@@ -146,6 +148,7 @@ public class ViveInputGun : MonoBehaviour
     #endregion
     private void OnTriggerStay(Collider other)
     {
+        print(other.name);
         if(other.CompareTag("Weapon") && weapon == null && other.transform.parent.GetComponent<Rigidbody>())
         {
             weapon = other.transform.parent.gameObject;
@@ -153,7 +156,7 @@ public class ViveInputGun : MonoBehaviour
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.transform.parent.gameObject == weapon && !grabbing)
+        if (!grabbing)
             weapon = null;
     }
 }
