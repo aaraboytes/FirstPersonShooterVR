@@ -4,30 +4,36 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] GameObject shootHole;
-    [SerializeField] GameObject shootParticle;
-    [SerializeField] LayerMask objectiveLayer;
-    private void OnCollisionEnter(Collision collision)
+    public GameObject bulletHole;
+    public GameObject collisionParticle;
+    private void OnCollisionEnter(Collision other)
     {
-        RaycastHit hit;
-        Vector3 dir = collision.GetContact(0).point - transform.position;
-        if (Physics.Raycast(transform.position, dir, out hit, 0.01f,objectiveLayer))
+        GameObject hole = Pool.Instance.Recycle(bulletHole, Vector3.zero, Quaternion.identity);
+        GameObject shotPart = Pool.Instance.Recycle(collisionParticle, Vector3.zero, Quaternion.identity);
+
+        Quaternion shotHoleRot = Quaternion.FromToRotation(transform.forward,other.contacts[0].normal);
+        Vector3 shotHolePos = other.contacts[0].point;
+
+        hole.transform.position = shotHolePos;
+        hole.transform.rotation = shotHoleRot;
+
+        shotPart.transform.position = shotHolePos;
+        shotPart.transform.rotation = shotHoleRot;
+
+        hole.transform.parent = other.transform;
+
+        print(other.gameObject.name);
+        if (other.gameObject.GetComponent<target>())
         {
-            GameObject shotHole = Pool.Instance.Recycle(shootHole, Vector3.zero, Quaternion.identity);
-            GameObject shotParticle = Pool.Instance.Recycle(shootParticle, Vector3.zero, Quaternion.identity);
-
-            Quaternion shotHoleRot = Quaternion.LookRotation(hit.normal);
-            //shotHoleRot = Quaternion.Euler(shotHoleRot.eulerAngles.x, shotHoleRot.eulerAngles.y + 90f, shotHoleRot.z);
-            Vector3 shotHolePos = hit.point;
-            shotHolePos += dir * 0.01f;
-
-            shotHole.transform.position = shotHolePos;
-            shotHole.transform.rotation = shotHoleRot;
-
-            shotParticle.transform.position = shotHolePos;
-            shotParticle.transform.rotation = shotHoleRot;
-
-            shotHole.transform.parent = collision.transform;
+            other.gameObject.GetComponent<target>().Hit(transform.position);
+            print("Component target");
         }
+        if (other.gameObject.GetComponent<TargetZone>())
+        {
+            other.gameObject.GetComponent<TargetZone>().Hit(transform.position);
+            print("Component targetZone");
+        }
+        GetComponent<Rigidbody>().velocity = Vector3.zero;
+        gameObject.SetActive(false);
     }
 }

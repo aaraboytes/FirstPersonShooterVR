@@ -6,17 +6,21 @@ public class ViveInputGun : MonoBehaviour
 {
     public SteamVR_TrackedObject mTrackedObject = null;
     public SteamVR_Controller.Device mDevice;
-    [SerializeField]
-    GameObject weapon = null;
-    bool grabbing = false;
+    public GameObject weapon = null;
+    GameObject ammo = null;
+    public bool grabbing = false;
    
-    //weapon
+    //Weapon
     Transform spawnPoint;
-    AmmoType type;
-    public GameObject bulletHole;
+    AmmoType ammoType;
+
+
     ParticleSystem shotParticle;
     GameObject collisionParticle;
+    int currentBullets = 0;
     int maxBullets = 0;
+    int currentAmmo = 0;
+    int maxAmmo = 0;
     float cadence = 0;
     float force = 0;
     AudioSource audio;
@@ -25,6 +29,9 @@ public class ViveInputGun : MonoBehaviour
     {
         mTrackedObject = GetComponent<SteamVR_TrackedObject>();
     }
+    private void Start()
+    {
+    }
     void Update()
     {
         mDevice = SteamVR_Controller.Input((int)mTrackedObject.index);
@@ -32,8 +39,17 @@ public class ViveInputGun : MonoBehaviour
         //Down
         if (mDevice.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
         {
-            if (weapon != null)
+            if (weapon != null && currentBullets > 0 && grabbing)
+            {
+                currentBullets--;
                 Shot();
+            }else if (weapon!= null && currentBullets == 0 && grabbing)
+            {
+                Reload();
+            }else if (weapon==null && ammo != null)
+            {
+                PickUpAmmo();
+            }
         }
         //Up
         if (mDevice.GetTouchUp(SteamVR_Controller.ButtonMask.Trigger))
@@ -42,7 +58,7 @@ public class ViveInputGun : MonoBehaviour
         }
         Vector2 triggerVal = mDevice.GetAxis(EVRButtonId.k_EButton_SteamVR_Trigger);
         #endregion
-        #region Grip
+        #region Grip (Grab / Drop gun)
         //Down
         if (mDevice.GetPressDown(SteamVR_Controller.ButtonMask.Grip))
         {
@@ -82,7 +98,6 @@ public class ViveInputGun : MonoBehaviour
         joint.connectedBody = weapon.GetComponent<Rigidbody>();
         //Make other rigidbody kinematic 
         weapon.transform.GetChild(0).GetComponent<Collider>().enabled = false;
-        
     }
     void DropWeapon()
     {
@@ -104,14 +119,18 @@ public class ViveInputGun : MonoBehaviour
     #region Shot
     void SetUpGun(Weapon w)
     {
-        type = w.ammoType;
+        ammoType = w.ammoType;
         maxBullets = w.maxBullets;
+        currentBullets = maxBullets;
+        maxAmmo = w.maxAmmo;
         cadence = w.cadence;
         force = w.force;
         spawnPoint = w.spawnPoint;
         shotParticle = w.shotParticle;
         collisionParticle = w.collisionParticle;
         audio = weapon.GetComponent<AudioSource>();
+
+        currentAmmo = 100;
     }
     void Shot()
     {
@@ -121,7 +140,7 @@ public class ViveInputGun : MonoBehaviour
         LevelManager.Instance.IncreaseBulletsShooted();
         Debug.DrawLine(spawnPoint.transform.position, spawnPoint.transform.position + spawnPoint.forward * 1, Color.red);
         audio.Play();
-        if (Physics.Raycast(spawnPoint.position, dir, out hit))
+        /*if (Physics.Raycast(spawnPoint.position, dir, out hit))
         {
             print("Collision with wall");
             GameObject hole = Pool.Instance.Recycle(bulletHole, Vector3.zero, Quaternion.identity);
@@ -145,24 +164,44 @@ public class ViveInputGun : MonoBehaviour
             {
                 hit.collider.gameObject.GetComponent<TargetZone>().Hit(hit.point);
             }
-        }
+        }*/
+        GameObject b = Pool.Instance.Recycle(LevelManager.Instance.FindKindOfBullet(ammoType),
+                                            spawnPoint.transform.position,
+                                            Quaternion.LookRotation(spawnPoint.forward));
+        b.GetComponent<Rigidbody>().AddForce(spawnPoint.forward * force);
     }
     void Reload()
     {
-
+        if (currentAmmo > 0)
+        {
+            currentBullets += maxBullets;
+            currentAmmo--;
+        }
+    }
+    void PickUpAmmo()
+    {
+        if (currentAmmo < maxAmmo && ammo.GetComponent<Ammo>().ammo == ammoType)
+        {
+            currentAmmo++;
+            Destroy(ammo);
+            ammo = null;
+        }
     }
     #endregion
     private void OnTriggerStay(Collider other)
     {
-        print(other.name);
         if(other.CompareTag("Weapon") && weapon == null && other.transform.parent.GetComponent<Rigidbody>())
         {
             weapon = other.transform.parent.gameObject;
+        }else if (other.CompareTag("Ammo"))
+        {
+            ammo = other.gameObject;
         }
     }
     private void OnTriggerExit(Collider other)
     {
         if (!grabbing)
             weapon = null;
+        if(ammo!=null)ammo = null;
     }
 }

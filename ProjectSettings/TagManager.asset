@@ -9,6 +9,8 @@ TagManager:
   - FPWeaponLayer
   - AI
   - Climb
+  - Bullet
+  - Ammo
   layers:
   - Default
   - TransparentFX

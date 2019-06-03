@@ -5,6 +5,7 @@ using UnityEngine;
 public class Weapon : MonoBehaviour
 {
     public int maxBullets;
+    public int maxAmmo;
     public AmmoType ammoType;
     public float cadence;
     public float force;
