@@ -50,7 +50,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!114 &1373859572333352249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -67,7 +67,7 @@ MonoBehaviour:
   maxAmmo: 0
   ammoType: 1
   cadence: 0.2
-  force: 500
+  force: 20
   spawnPoint: {fileID: 1373859572743715175}
   shotParticle: {fileID: 651703946355254840}
   collisionParticle: {fileID: 1662492744114112331, guid: 530cc26d4115e5e4e98ccddca32b3981,

@@ -168,7 +168,7 @@ public class ViveInputGun : MonoBehaviour
         GameObject b = Pool.Instance.Recycle(LevelManager.Instance.FindKindOfBullet(ammoType),
                                             spawnPoint.transform.position,
                                             Quaternion.LookRotation(spawnPoint.forward));
-        b.GetComponent<Rigidbody>().AddForce(spawnPoint.forward * force);
+        b.GetComponent<Rigidbody>().AddForce(spawnPoint.forward * force,ForceMode.Impulse);
     }
     void Reload()
     {

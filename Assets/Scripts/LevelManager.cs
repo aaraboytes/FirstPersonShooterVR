@@ -22,7 +22,12 @@ public class LevelManager : MonoBehaviour
 {
     public static LevelManager Instance;
     public int Score { get; set; }
+    [Header("UI")]
     public Text scoreText;
+    public Text promText;
+    public Text totalShotsText;
+    public Text goodShotsText;
+
     float trackTime = 0;
     bool trackPlaying = false;
     int bulletsShooted = 0;
@@ -47,13 +52,20 @@ public class LevelManager : MonoBehaviour
     {
         Score += extra;
         scoreText.text = Score.ToString();
-        print("Score increased" + Score.ToString());
+        IncreaseSuccessfulBullets();
     }
     public void StartTrack() { trackPlaying = true; }
     public void EndTrack() { trackPlaying = false; }
     public void ResetTrack() { trackTime = 0; }
-    public void IncreaseBulletsShooted() { bulletsShooted++; }
-    public void IncreaseSuccessfulBullets() { successfulBullets++; }
+    public void IncreaseBulletsShooted() {
+        bulletsShooted++;
+        totalShotsText.text = bulletsShooted.ToString();
+    }
+    public void IncreaseSuccessfulBullets() {
+        successfulBullets++;
+        goodShotsText.text = successfulBullets.ToString();
+        promText.text = ((float)Score / (float)successfulBullets).ToString();
+    }
     public int GetBulletsShooted() { return bulletsShooted; }
     public int GetSuccessfulBullets() { return successfulBullets; }
     public Stats CalculateStats()
