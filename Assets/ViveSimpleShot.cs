@@ -7,7 +7,9 @@ public class ViveSimpleShot : MonoBehaviour
     public SteamVR_TrackedObject mTrackedObject = null;
     public SteamVR_Controller.Device mDevice;
 
+    [Header("Weapon")]
     public Weapon weapon;
+    public Animator handAnimator;
     //Gun params
     AmmoType ammoType;
     Transform spawnPoint;
@@ -34,6 +36,7 @@ public class ViveSimpleShot : MonoBehaviour
     void Start()
     {
         audio = GetComponent<AudioSource>();
+        SetUpWeapon();
     }
     void Update()
     {
@@ -41,9 +44,10 @@ public class ViveSimpleShot : MonoBehaviour
         #region Trigger
         //Down
         timer += Time.deltaTime;
-        if (mDevice.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
+        if (mDevice.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger) && timer > cadence)
         {
-            if(currentBullets > 0 && timer>cadence)
+            handAnimator.SetTrigger("shot");
+            if(currentBullets > 0)
             {
                 Shot();
             }
@@ -78,6 +82,7 @@ public class ViveSimpleShot : MonoBehaviour
     }
     void Shot()
     {
+        currentBullets--;
         Vector3 dir = spawnPoint.forward;
         shotParticle.Stop();
         shotParticle.Play();
