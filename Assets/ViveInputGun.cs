@@ -14,9 +14,7 @@ public class ViveInputGun : MonoBehaviour
     Transform spawnPoint;
     AmmoType ammoType;
 
-
     ParticleSystem shotParticle;
-    GameObject collisionParticle;
     int currentBullets = 0;
     int maxBullets = 0;
     int currentAmmo = 0;
@@ -127,44 +125,17 @@ public class ViveInputGun : MonoBehaviour
         force = w.force;
         spawnPoint = w.spawnPoint;
         shotParticle = w.shotParticle;
-        collisionParticle = w.collisionParticle;
         audio = weapon.GetComponent<AudioSource>();
 
         currentAmmo = 100;
     }
     void Shot()
     {
-        RaycastHit hit;
         Vector3 dir = spawnPoint.forward;
         shotParticle.Play();
         LevelManager.Instance.IncreaseBulletsShooted();
         Debug.DrawLine(spawnPoint.transform.position, spawnPoint.transform.position + spawnPoint.forward * 1, Color.red);
         audio.Play();
-        /*if (Physics.Raycast(spawnPoint.position, dir, out hit))
-        {
-            print("Collision with wall");
-            GameObject hole = Pool.Instance.Recycle(bulletHole, Vector3.zero, Quaternion.identity);
-            GameObject shotPart = Pool.Instance.Recycle(collisionParticle, Vector3.zero, Quaternion.identity);
-            
-            Quaternion shotHoleRot = Quaternion.LookRotation(hit.normal);
-            Vector3 shotHolePos = hit.point - dir * 0.01f;
-
-            hole.transform.position = shotHolePos;
-            hole.transform.rotation = shotHoleRot;
-
-            shotPart.transform.position = shotHolePos;
-            shotPart.transform.rotation = shotHoleRot;
-
-            hole.transform.parent = hit.transform;
-            if (hit.collider.gameObject.GetComponent<target>())
-            {
-                hit.collider.gameObject.GetComponent<target>().Hit(hit.point);
-            }
-            if (hit.collider.gameObject.GetComponent<TargetZone>())
-            {
-                hit.collider.gameObject.GetComponent<TargetZone>().Hit(hit.point);
-            }
-        }*/
         GameObject b = Pool.Instance.Recycle(LevelManager.Instance.FindKindOfBullet(ammoType),
                                             spawnPoint.transform.position,
                                             Quaternion.LookRotation(spawnPoint.forward));
