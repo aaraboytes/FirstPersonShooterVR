@@ -9,6 +9,8 @@ public class Disparar : MonoBehaviour
    // private SteamVR_TrackedController device;
 
     void Start()
+
+         
     {
       //  device = GetComponent<SteamVR_TrackedController>();
        //device.TriggerClicked += trigger;
@@ -28,7 +30,7 @@ public class Disparar : MonoBehaviour
 
    /* void trigger (object sender, ClickedEventArgs e)
     {
-        Debug.Log("Disparo");
         SteamVR_Controller.Input((int)device.index).TriggerHapticPulse(500);
     }*/
 }
+    
